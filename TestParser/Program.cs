@@ -37,30 +37,33 @@ cts.Cancel();
 
 async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
 {
-
-    
     if (update.Message is not { } message)
         return;
  
     if (message.Text is not { } messageText)
         return;
-    //httpClient
-    HttpClient httpClient = new();
-    using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://monerohash.com/api/stats_address?address=49Suh9bksbqE8igcs6u7B42hb4zqtjyfM7TfkRL8s6a9X9oT8sCD7YoA5mRuHtSRUWXdgqXsqhuhiiUekfcMLHwgMbHam2Z&longpoll=true");
-    using HttpResponseMessage response = await httpClient.SendAsync(request);
-    Thread.Sleep(1000);
-    Console.WriteLine(response.StatusCode);
+    Stats stats = new();
+    try
+    {
+        //httpClient
+        HttpClient httpClient = new();
+        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://monerohash.com/api/stats_address?address=49Suh9bksbqE8igcs6u7B42hb4zqtjyfM7TfkRL8s6a9X9oT8sCD7YoA5mRuHtSRUWXdgqXsqhuhiiUekfcMLHwgMbHam2Z&longpoll=true");
+        using HttpResponseMessage response = await httpClient.SendAsync(request);
+        //Проверка статуса сайта
+        Console.WriteLine(response.StatusCode);
 
- 
-    Console.WriteLine("\nContent");
-    string content = await response.Content.ReadAsStringAsync();
-    JObject jObj = JObject.Parse(content);
-    string balance = (string)jObj["stats"]["balance"];
-    string hashrate = (string)jObj["stats"]["hashrate"];
-    
-    Console.WriteLine(balance);
-    Console.WriteLine(content);
+        
+        Console.WriteLine("\nContent");
+        string content = await response.Content.ReadAsStringAsync();
+        JObject jObj = JObject.Parse(content);
+        stats.balance = (string)jObj["stats"]["balance"];
+        stats.hashrate = (string)jObj["stats"]["hashrate"];
+        
+        Console.WriteLine(content);
 
+    }
+    catch (Exception ex) { }
+    float num =(float)Convert.ToDouble(stats.balance);
     var chatId = message.Chat.Id;
    
     Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
@@ -82,11 +85,13 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     {
         ResizeKeyboard = true
     };
-    string fullsttring = $"Ваш Баланс: 0.{balance}\n Хешрейт равен:{hashrate}";
+    float full = 0.000000000000f;
+    float sum = num+full;
+    
+    string fullsttring = $"Ваш Баланс: {sum}\nХешрейт равен:{stats.hashrate}";
+    
     if (message.Text == "Сколько?")
     {
-
-
         {
             Message sent = await botClient.SendTextMessageAsync
         (
@@ -100,9 +105,6 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     }
    
 }
-    
-
-
 
 Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
 {

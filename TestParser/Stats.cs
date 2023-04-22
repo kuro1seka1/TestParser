@@ -8,10 +8,10 @@ namespace TestParser
 {
     public class Stats
     {
-        public string hashes { get; set; }
-        public string lastShare { get; set; }
-        public string balance { get; set; }
-        public string hashrate { get; set; }
+        public string? hashes { get; set; }
+        public string? lastShare { get; set; }
+        public string? balance { get; set; }
+        public string? hashrate { get; set; }
     }
 
 }
