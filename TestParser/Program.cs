@@ -52,7 +52,7 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
         //Проверка статуса сайта
         Console.WriteLine(response.StatusCode);
 
-        
+        //stroki
         Console.WriteLine("\nContent");
         string content = await response.Content.ReadAsStringAsync();
         JObject jObj = JObject.Parse(content);
@@ -63,7 +63,6 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
 
     }
     catch (Exception ex) { }
-    float num =(float)Convert.ToDouble(stats.balance);
     var chatId = message.Chat.Id;
    
     Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
@@ -75,8 +74,6 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
         messageText = "Бот начал работу"
         );
     }
-    string line = "-------------------------------------";
- 
     ReplyKeyboardMarkup replyKeyboardMarkup =
     new(new[]
                 {
@@ -85,10 +82,9 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     {
         ResizeKeyboard = true
     };
-    float full = 0.000000000000f;
-    float sum = num+full;
     
-    string fullsttring = $"Ваш Баланс: {sum}\nХешрейт равен:{stats.hashrate}";
+    
+    string fullsttring = $"Ваш Баланс: {stats.balance}\nХешрейт равен:{stats.hashrate}";
     
     if (message.Text == "Сколько?")
     {
