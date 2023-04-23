@@ -50,8 +50,10 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
         TestParser.HttpClient client = new();
     string urlFromMonero = "https://monerohash.com/api/stats_address?address=49Suh9bksbqE8igcs6u7B42hb4zqtjyfM7TfkRL8s6a9X9oT8sCD7YoA5mRuHtSRUWXdgqXsqhuhiiUekfcMLHwgMbHam2Z&longpoll=true";
     string urlFromGeco = "https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=rub"; 
+
     var jsonres= client.Response(urlFromMonero);
     var jsonformgeco = client.Response(urlFromGeco);
+
         JObject MoneroHashJson = JObject.Parse(jsonres);
         JObject CoinGecoJson = JObject.Parse(jsonformgeco);
 
@@ -59,7 +61,6 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
         stats.hashrate = (string)MoneroHashJson["stats"]["hashrate"];
         coinGeco.coin = (string)CoinGecoJson["monero"]["rub"];
         
-        //Console.WriteLine(content);
 
    
     var chatId = message.Chat.Id;
