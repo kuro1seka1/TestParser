@@ -11,7 +11,7 @@ namespace TestParser
         public double Persent(double fullPrice, double balance)
         {
             double percent = (balance / 1.0000000000000) * 100;
-            double result = percent*fullPrice;
+            double result = percent*fullPrice/100;
             return result;
         }
 
