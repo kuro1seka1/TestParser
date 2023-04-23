@@ -1,6 +1,7 @@
 ﻿
 
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using Telegram.Bot;
@@ -11,7 +12,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TestParser;
 
-var botClient = new TelegramBotClient("6010175081:AAHFtfLWHXpXcG_clKCdmdOcAKjcatLGQKI");
+var botClient = new TelegramBotClient("6278666352:AAFG-St3nHyM7_e595lBqTRDGhSHbqAnlpQ");
 using CancellationTokenSource cts = new();
 
 
@@ -43,26 +44,24 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     if (message.Text is not { } messageText)
         return;
     Stats stats = new();
-    try
-    {
-        //httpClient
-        HttpClient httpClient = new();
-        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://monerohash.com/api/stats_address?address=49Suh9bksbqE8igcs6u7B42hb4zqtjyfM7TfkRL8s6a9X9oT8sCD7YoA5mRuHtSRUWXdgqXsqhuhiiUekfcMLHwgMbHam2Z&longpoll=true");
-        using HttpResponseMessage response = await httpClient.SendAsync(request);
-        //Проверка статуса сайта
-        Console.WriteLine(response.StatusCode);
+    CoinGeco coinGeco = new();
 
-        //stroki
-        Console.WriteLine("\nContent");
-        string content = await response.Content.ReadAsStringAsync();
-        JObject jObj = JObject.Parse(content);
-        stats.balance = (string)jObj["stats"]["balance"];
-        stats.hashrate = (string)jObj["stats"]["hashrate"];
+    //httpClient
+        TestParser.HttpClient client = new();
+    string urlFromMonero = "https://monerohash.com/api/stats_address?address=49Suh9bksbqE8igcs6u7B42hb4zqtjyfM7TfkRL8s6a9X9oT8sCD7YoA5mRuHtSRUWXdgqXsqhuhiiUekfcMLHwgMbHam2Z&longpoll=true";
+    string urlFromGeco = "https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=rub"; 
+    var jsonres= client.Response(urlFromMonero);
+    var jsonformgeco = client.Response(urlFromGeco);
+        JObject MoneroHashJson = JObject.Parse(jsonres);
+        JObject CoinGecoJson = JObject.Parse(jsonformgeco);
+
+        stats.balance = (string)MoneroHashJson["stats"]["balance"];
+        stats.hashrate = (string)MoneroHashJson["stats"]["hashrate"];
+        coinGeco.coin = (string)CoinGecoJson["monero"]["rub"];
         
-        Console.WriteLine(content);
+        //Console.WriteLine(content);
 
-    }
-    catch (Exception ex) { }
+   
     var chatId = message.Chat.Id;
    
     Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
@@ -82,9 +81,12 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     {
         ResizeKeyboard = true
     };
-    
-    
-    string fullsttring = $"Ваш Баланс: {stats.balance}\nХешрейт равен:{stats.hashrate}";
+    Percent percent = new Percent();
+    string fullPriceReplace = coinGeco.coin.Replace(".", ",");
+    double fullPrice = Convert.ToDouble(fullPriceReplace);
+    double balance = Convert.ToDouble(stats.balance) / 1000000000000;
+    double rub_balance = percent.Persent(fullPrice, balance);
+    string fullsttring = $"Ваш Баланс: {balance}\nХешрейт равен:{stats.hashrate}\nБаланс в рублях:{rub_balance}";
     
     if (message.Text == "Сколько?")
     {
