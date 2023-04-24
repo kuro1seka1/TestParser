@@ -9,16 +9,16 @@ namespace TestParser
 {
     public class HttpClient
     {
-       public string Response (string url)
+       public async Task<string> Response(string url)
        {
             var client = new RestClient(url);
 
             var request = new RestRequest();
+            using var cts = new CancellationTokenSource();
+            cts.CancelAfter(TimeSpan.FromSeconds(30));
+            var response = await client.GetAsync(request,cts.Token);
 
-            var response = client.Get(request);
-            
-
-            return response.Content;
+            return response.Content.ToString();
 
             
        }

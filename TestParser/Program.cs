@@ -12,7 +12,8 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TestParser;
 
-var botClient = new TelegramBotClient("6278666352:AAFG-St3nHyM7_e595lBqTRDGhSHbqAnlpQ");
+
+var botClient = new TelegramBotClient("6010175081:AAHFtfLWHXpXcG_clKCdmdOcAKjcatLGQKI");
 using CancellationTokenSource cts = new();
 
 
@@ -47,15 +48,15 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     CoinGeco coinGeco = new();
 
     //httpClient
-        TestParser.HttpClient client = new();
+       TestParser.HttpClient client = new();
     string urlFromMonero = "https://monerohash.com/api/stats_address?address=49Suh9bksbqE8igcs6u7B42hb4zqtjyfM7TfkRL8s6a9X9oT8sCD7YoA5mRuHtSRUWXdgqXsqhuhiiUekfcMLHwgMbHam2Z&longpoll=true";
     string urlFromGeco = "https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=rub"; 
 
-    var jsonres= client.Response(urlFromMonero);
-    var jsonformgeco = client.Response(urlFromGeco);
+    string jsonres = await client.Response(urlFromMonero);
+    string jsonformgeco = await client.Response(urlFromGeco);
 
-        JObject MoneroHashJson = JObject.Parse(jsonres);
-        JObject CoinGecoJson = JObject.Parse(jsonformgeco);
+    JObject MoneroHashJson = JObject.Parse(jsonres);
+    JObject CoinGecoJson = JObject.Parse(jsonformgeco);
 
         stats.balance = (string)MoneroHashJson["stats"]["balance"];
         stats.hashrate = (string)MoneroHashJson["stats"]["hashrate"];
@@ -87,7 +88,8 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     double fullPrice = Convert.ToDouble(fullPriceReplace);
     double balance = Convert.ToDouble(stats.balance) / 1000000000000;
     double rub_balance = percent.Persent(fullPrice, balance);
-    string fullsttring = $"Ваш Баланс: {balance}\nХешрейт равен:{stats.hashrate}\nБаланс в рублях:{rub_balance}";
+    var rounded = Math.Round(rub_balance, 2);
+    string fullsttring = $"Ваш Баланс: {balance}\nХешрейт равен: {stats.hashrate}\nБаланс в рублях: {rounded}";
     
     if (message.Text == "Сколько?")
     {
