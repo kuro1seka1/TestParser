@@ -8,9 +8,9 @@ namespace TestParser
 {
     public class Stats
     {
-        public string? hashes { get; set; }
+        public string? workers { get; set; }
         public string? lastShare { get; set; }
-        public string? balance { get; set; }
+        public string? comfirmedBalance { get; set; }
         public string? hashrate { get; set; }
     }
 

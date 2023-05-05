@@ -49,17 +49,18 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
 
     //httpClient
     TestParser.HttpClient client = new();
-    string urlFromMonero = "https://monerohash.com/api/stats_address?address=49Suh9bksbqE8igcs6u7B42hb4zqtjyfM7TfkRL8s6a9X9oT8sCD7YoA5mRuHtSRUWXdgqXsqhuhiiUekfcMLHwgMbHam2Z&longpoll=true";
+    string urlFromMonero = "https://api.hashvault.pro/v3/monero/wallet/49Suh9bksbqE8igcs6u7B42hb4zqtjyfM7TfkRL8s6a9X9oT8sCD7YoA5mRuHtSRUWXdgqXsqhuhiiUekfcMLHwgMbHam2Z/stats?chart=total&inactivityThreshold=10&order=-name&period=daily&poolType=false&workers=true";
     string urlFromGeco = "https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=rub"; 
 
     string jsonres = await client.Response(urlFromMonero);
     string jsonformgeco = await client.Response(urlFromGeco);
 
-    JObject MoneroHashJson = JObject.Parse(jsonres);
+    JObject HashVaultJson = JObject.Parse(jsonres);
     JObject CoinGecoJson = JObject.Parse(jsonformgeco);
 
-        stats.balance = (string)MoneroHashJson["stats"]["balance"];
-        stats.hashrate = (string)MoneroHashJson["stats"]["hashrate"];
+        stats.comfirmedBalance = (string)HashVaultJson["revenue"]["comfirmedBalance"];
+        stats.hashrate = (string)HashVaultJson["collective"]["hashRate"];
+        stats.workers = (string)HashVaultJson["collectiveWorkers"][0]["activeMiners"];
         coinGeco.coin = (string)CoinGecoJson["monero"]["rub"];
         
 
@@ -86,10 +87,10 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     Percent percent = new Percent();
     string fullPriceReplace = coinGeco.coin.Replace(".", ",");
     double fullPrice = Convert.ToDouble(fullPriceReplace);
-    double balance = Convert.ToDouble(stats.balance) / 1000000000000;
+    double balance = Convert.ToDouble(stats.comfirmedBalance) / 1000000000000;
     double rub_balance = percent.Persent(fullPrice, balance);
     var rounded = Math.Round(rub_balance, 2);
-    string fullsttring = $"Ваш Баланс: {balance}\nХешрейт равен: {stats.hashrate}\nБаланс в рублях: {rounded}";
+    string fullsttring = $"Ваш Баланс: {balance}\nХешрейт равен: {stats.hashrate}\nАктивных майнеров:{stats.workers}\nБаланс в рублях: {rounded}";
     
     if (message.Text == "Сколько?")
     {
