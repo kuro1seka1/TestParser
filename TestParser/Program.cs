@@ -13,7 +13,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TestParser;
 
 
-var botClient = new TelegramBotClient("6010175081:AAHFtfLWHXpXcG_clKCdmdOcAKjcatLGQKI");
+var botClient = new TelegramBotClient("Bot token");
 using CancellationTokenSource cts = new();
 
 
