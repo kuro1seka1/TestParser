@@ -85,11 +85,7 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
         ResizeKeyboard = true
     };
     Percent percent = new Percent();
-    //string fullPriceReplace = coinGeco.coin.Replace(".", ",");
-    //double fullPrice = Convert.ToDouble(fullPriceReplace);
-    //double balance = Convert.ToDouble(stats.comfirmedBalance) / 1000000000000;
-    //double rub_balance = percent.Persent(fullPrice, balance);
-    //var rounded = Math.Round(rub_balance, 2);
+
     string fullsttring = $"Ваш Баланс: {stats.comfirmedBalance}\nХешрейт равен: {stats.hashrate}\nАктивных майнеров: {stats.workers}";
     //Баланс в рублях:{rounded}
 
